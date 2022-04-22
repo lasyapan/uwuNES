@@ -21,13 +21,14 @@ class cpu{
     // Condition codes for 6502 Status register
     enum flags
     {
-        negative = 7,
-        overflow = 6,
-        reserved = 5,
-        break = 4,
-        decimal = 3,
-        interrupt_disable = 2,
-        zero = 1,
+        //to modify the status register
+        negative = 0 >> 7,
+        overflow = 0 >> 6,
+        reserved = 0 >> 5, //unused
+        break = 0 >> 4,
+        decimal = 0 >> 3,
+        interrupt_disable = 0 >> 2,
+        zero = 0 >> 1,
         carry = 0,
     };
 
@@ -122,11 +123,11 @@ class cpu{
         byte cycle = 0;
     }
 
-    //lookup table constructor
+    //lookup table constructor 
     cpu(){
         opcodes[] = 
 	{
-		{ "BRK_IMM", cpu::BRK, cpu::IMM, 7 },{ "ORA", cpu::ORA, cpu::IZX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 3 },{ "ORA", cpu::ORA, cpu::ZP0, 3 },{ "ASL", cpu::ASL, cpu::ZP0, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PHP", cpu::PHP, cpu::IMP, 3 },{ "ORA", cpu::ORA, cpu::IMM, 2 },{ "ASL", cpu::ASL, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ORA", cpu::ORA, cpu::ABS, 4 },{ "ASL", cpu::ASL, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
+		{ "BRK", cpu::BRK, cpu::IMP, 7 },{ "ORA", cpu::ORA, cpu::IZX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 3 },{ "ORA", cpu::ORA, cpu::ZP0, 3 },{ "ASL", cpu::ASL, cpu::ZP0, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PHP", cpu::PHP, cpu::IMP, 3 },{ "ORA", cpu::ORA, cpu::IMM, 2 },{ "ASL", cpu::ASL, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ORA", cpu::ORA, cpu::ABS, 4 },{ "ASL", cpu::ASL, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
 		{ "BPL", cpu::BPL, cpu::REL, 2 },{ "ORA", cpu::ORA, cpu::IZY, 5 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ORA", cpu::ORA, cpu::ZPX, 4 },{ "ASL", cpu::ASL, cpu::ZPX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "CLC", cpu::CLC, cpu::IMP, 2 },{ "ORA", cpu::ORA, cpu::ABY, 4 },{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 7 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ORA", cpu::ORA, cpu::ABX, 4 },{ "ASL", cpu::ASL, cpu::ABX, 7 },{ "UNO", cpu::UNO, cpu::IMP, 7 },
 		{ "JSR", cpu::JSR, cpu::ABS, 6 },{ "AND", cpu::AND, cpu::IZX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "BIT", cpu::BIT, cpu::ZP0, 3 },{ "AND", cpu::AND, cpu::ZP0, 3 },{ "ROL", cpu::ROL, cpu::ZP0, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PLP", cpu::PLP, cpu::IMP, 4 },{ "AND", cpu::AND, cpu::IMM, 2 },{ "ROL", cpu::ROL, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "BIT", cpu::BIT, cpu::ABS, 4 },{ "AND", cpu::AND, cpu::ABS, 4 },{ "ROL", cpu::ROL, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
 		{ "BMI", cpu::BMI, cpu::REL, 2 },{ "AND", cpu::AND, cpu::IZY, 5 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "AND", cpu::AND, cpu::ZPX, 4 },{ "ROL", cpu::ROL, cpu::ZPX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "SEC", cpu::SEC, cpu::IMP, 2 },{ "AND", cpu::AND, cpu::ABY, 4 },{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 7 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "AND", cpu::AND, cpu::ABX, 4 },{ "ROL", cpu::ROL, cpu::ABX, 7 },{ "UNO", cpu::UNO, cpu::IMP, 7 },
@@ -143,6 +144,17 @@ class cpu{
 		{ "CPX", cpu::CPX, cpu::IMM, 2 },{ "SBC", cpu::SBC, cpu::IZX, 6 },{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "CPX", cpu::CPX, cpu::ZP0, 3 },{ "SBC", cpu::SBC, cpu::ZP0, 3 },{ "INC", cpu::INC, cpu::ZP0, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "INX", cpu::INX, cpu::IMP, 2 },{ "SBC", cpu::SBC, cpu::IMM, 2 },{ "NOP", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::SBC, cpu::IMP, 2 },{ "CPX", cpu::CPX, cpu::ABS, 4 },{ "SBC", cpu::SBC, cpu::ABS, 4 },{ "INC", cpu::INC, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
 		{ "BEQ", cpu::BEQ, cpu::REL, 2 },{ "SBC", cpu::SBC, cpu::IZY, 5 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "SBC", cpu::SBC, cpu::ZPX, 4 },{ "INC", cpu::INC, cpu::ZPX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "SED", cpu::SED, cpu::IMP, 2 },{ "SBC", cpu::SBC, cpu::ABY, 4 },{ "NOP", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 7 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "SBC", cpu::SBC, cpu::ABX, 4 },{ "INC", cpu::INC, cpu::ABX, 7 },{ "UNO", cpu::UNO, cpu::IMP, 7 },
 	};
+
+    void reset(){
+    // registers are set to 0x00,
+    registers.a = 0;
+    registers.x = 0;
+    registers.y = 0;
+    registers.stack = 0x00 | reserved; //result of OR is 1 if any of the two bits is 1
+
+
+    
+    }
 
 
     }
