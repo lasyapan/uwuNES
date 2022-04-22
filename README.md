@@ -55,10 +55,15 @@ Some have useful effects that games have made use of, but I have not implemented
 
 # References
 [NESdev Wiki](https://www.nesdev.org/wiki/Nesdev_Wiki) 
-[emudev.de][https://emudev.de]
+
+[emudev.de](https://emudev.de)
+
 [Ultimate 6502 Reference](https://www.pagetable.com/c64ref/6502/?tab=3)
+
 [6502 Datasheet](http://archive.6502.org/datasheets/mos_6500_mpu_preliminary_may_1976.pdf)
+
 [NES Mastersheet](https://github.com/xem/nes/blob/gh-pages/cheat%20sheet.txt)
+
 [PPU Emulation](https://www.nesdev.com/NES%20emulator%20development%20guide.txt)
 
 
