@@ -126,5 +126,18 @@ class cpu{
     };
 
     //status register functions
-    byte getflag();
+    byte getFlag();
+    void setFlag();
+
+    byte absAddress = 0x00;
+    byte relAddress = 0x00;
+    byte cycles;
+    byte opcode;
+
+
+    bool complete(); // if complete, cycle++ instead of counting
+    byte fetch();
+    void clock();
+
+    
  };
