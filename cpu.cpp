@@ -34,6 +34,7 @@ void cpu::reset(){
     x = 0x00;
     y = 0x00;
     stack = 0x00 | reserved; //result of OR is 1 if any of the two bits is 1
-	absAddress = 0x00;
-	relAddress = 0x00;
+	absAddress = 0xFFFC; // absolute address = 0
+	relAddress = 0x00; //relative address = 0
+
 }

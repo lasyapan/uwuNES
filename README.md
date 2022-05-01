@@ -39,6 +39,19 @@ Usually, most unofficial opcodes execute the equivalent of a NOP (no operation) 
 
 Some have useful effects that games have made use of, but I have not implemented them yet. This is a good page to look at the usable unofficial opcodes: [NESdev](https://www.nesdev.org/wiki/Programming_with_unofficial_opcodes)
 
+# Bus
+Buses are simply just wirings between components like the CPU and the memory. Through a bus, the CPU or PPU can read or write to/from the memory. Although, you don't technically need to emulate a bus, I included it because it makes the code a little easier to work with. Instead of writing 
+
+The bus routes interrupts, handles read/writes/memory mapping and coordinates the PPU/CPU timings (super important). 
+
+## Mirroring
+As mentioned before, the NES tries to be cheap. As a result, there are a few quirks about the system. Mirroring is one used to reduce the hardware needed to decode addresses. 
+
+Mirroring refers to one address space being mapped to another. It happens when some address lines are ignored, leading to a not fully-decoded address. 
+
+Ex: Attempting to access memory at, for example, $0173 is the same as accessing memory at $0973, $1173, or $1973 because memory at $0000-$07FF is mirrored at $0800-$0FFF, $1000-$17FF, and $1800-$1FFF.
+
+
 # PPU
 
 # APU

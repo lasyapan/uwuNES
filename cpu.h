@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string>
 
-using namespace std;
 
 typedef uint8_t byte;
 typedef uint16_t byte2;
@@ -119,7 +118,7 @@ class cpu{
     byte UNO(); // unofficial opcodes (nop)
 
     struct OPCODE{
-        string num; 
+        std::string num; 
         byte (cpu::*opcode) (void) = NULL; // function pointer to implementation of opcode
         byte (cpu::*address) (void) = NULL; // function pointer to addressing mode
         byte cycle = 0;
