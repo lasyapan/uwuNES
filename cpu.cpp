@@ -1,9 +1,15 @@
 #include <iostream>
+#include "bus.h"
 #include "cpu.h"
 
 using namespace std;
 
+byte read(byte2 address){
+	
+}
+void write(byte2 address, byte data){
 
+}
 cpu::cpu(){
         //lookup table constructor 
         const OPCODE opcodes[256] = 
@@ -29,12 +35,22 @@ cpu::cpu(){
 }
 
 void cpu::reset(){
-    // registers are set to 0x00,
+    // registers are set to 0x00, status cleared except unused flag, absolute address = 0xFFFC, PC = address at absolute address, then all registers reset, number of cycles taken = 8
     a = 0x00;
     x = 0x00;
     y = 0x00;
-    stack = 0x00 | reserved; //result of OR is 1 if any of the two bits is 1
-	absAddress = 0xFFFC; // absolute address = 0
+
+	absAddress = 0xFFFC;
+	byte highbit = read(absAddress);
+	byte lowbit = read(absAddress + 1);
+	pc = (highbit << 8) | (lowbit);
+
+
+
+
+	stack = 0xFD;
+    status = 0x00 | reserved; //result of OR is 1 if any of the two bits is 1
+	absAddress = 0x000; // absolute address = 0
 	relAddress = 0x00; //relative address = 0
 
 }

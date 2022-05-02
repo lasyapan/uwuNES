@@ -13,5 +13,6 @@ class bus{
         cpu cpu;
         std::array<byte, 64*1024> RAM;
         void write(byte2 address, byte data);
-        byte read(byte2 address, byte data);
+        byte read(byte2 address);
 };
+

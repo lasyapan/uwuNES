@@ -2,14 +2,23 @@
 #include <stdio.h>
 #include <string>
 
-
 typedef uint8_t byte;
 typedef uint16_t byte2;
 
 
+//Forward declaration: prevents circular inclusion of header files by declaring the bus class here itself
+class bus;
+
 class cpu{
     public: 
-    
+    // Bus connection functions
+    byte read(byte2 address);
+    void write(byte2 address, byte data);
+    void connect(bus *n){
+        bus = n;
+    }
+    bus *bus = NULL;
+
     
     // Registers for 6502 CPU
     byte a = 0x00; // Accumulator register
