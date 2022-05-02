@@ -145,6 +145,7 @@ class cpu{
 
     bool complete(); // if complete, cycle++ instead of counting
     byte fetch();
+    byte fetched;
     void clock();
 
     

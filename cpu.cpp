@@ -1,14 +1,14 @@
 #include <iostream>
-#include "bus.h"
 #include "cpu.h"
+#include "bus.h"
 
 using namespace std;
 
-byte read(byte2 address){
-	
+byte cpu::read(byte2 address){
+	return bus->read(address);
 }
-void write(byte2 address, byte data){
-
+void cpu::write(byte2 address, byte data){
+	bus->write(address, data);
 }
 cpu::cpu(){
         //lookup table constructor 
@@ -45,12 +45,10 @@ void cpu::reset(){
 	byte lowbit = read(absAddress + 1);
 	pc = (highbit << 8) | (lowbit);
 
-
-
-
 	stack = 0xFD;
     status = 0x00 | reserved; //result of OR is 1 if any of the two bits is 1
 	absAddress = 0x000; // absolute address = 0
 	relAddress = 0x00; //relative address = 0
-
+	fetched = 0x00;
+	cycles = 8;
 }
