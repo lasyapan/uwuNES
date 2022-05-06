@@ -37,7 +37,7 @@ class cpu{
         reserved = 1 << 5, //unused
         bbreak = 1 << 4,
         decimal = 1 << 3,
-        interrupt_disable = 1 << 2,
+        interrupt_disable = 1 << 2, // 0 = no, 1 = yes
         zero = 1 << 1,
         carry = 1 << 0,
     };
@@ -134,12 +134,12 @@ class cpu{
     };
 
     //status register functions
-    byte getFlag();
-    void setFlag();
+    byte getFlag(flags flag);
+    void setFlag(flags flag, int val);
 
     byte absAddress = 0x00;
     byte relAddress = 0x00;
-    byte cycles;
+    byte cycles; //current cycles
     byte opcode;
 
 

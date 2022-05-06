@@ -1,6 +1,6 @@
 # uwuNES
 
-uwuNES is a Nintendo Entertainment System emulator written in C++. It's named uwuNES because I saw someone call theirs NESchan and I found it funny. 
+uwuNES is a Nintendo Entertainment System emulator written in C++. It's named uwuNES because I saw someone call theirs NESchan and I found it funny. I referred to various source code on the internet, mostly following 
 
 # CPU
 ## MOS 6502
@@ -11,14 +11,16 @@ The 6502 has:
 - one 8-bit stack pointer, 
 - one 16-bit PC register.
 
+- The stack is implemented using a 256-byte array whose location is hardcoded at page $01 ($0100-$01FF).
+
 - 16 bit addressing space
 
 - Zero page addressing kind of "makes up" for the lack of registers. The CPU doesn't have to spend an additional cycle to fetch another high byte. Instead, it accesses the first 256 bytes of the memory map. For example, $65 will imply 0x65.
 
 - The CPU is little-endian i.e. the least significant byte is placed at the beginning.
 
-- There are also are a few functions: Reset, Sync, NM
-I (Non-Maskable INterrupt), IRQ (Interrupt Request). 
+- There are also are a few functions: Reset, Sync, NMI (Non-Maskable INterrupt), IRQ (Interrupt Request). 
+
 
 ## Addressing Modes
 The 6502 has 151 opcodes. But they are grouped into 56 actual operations or functions. They differ solely by their addressing modes or how the operands/data is fetched. 
@@ -71,6 +73,8 @@ Ex: Attempting to access memory at $0173 is the same as accessing memory at $097
 # References
 [NESdev Wiki](https://www.nesdev.org/wiki/Nesdev_Wiki) 
 
+[Mastersheet](https://www.nesdev.com/NES%20emulator%20development%20guide.txt)
+
 [emudev.de](https://emudev.de)
 
 [Ultimate 6502 Reference](https://www.pagetable.com/c64ref/6502/?tab=3)
@@ -80,5 +84,9 @@ Ex: Attempting to access memory at $0173 is the same as accessing memory at $097
 [NES Mastersheet](https://github.com/xem/nes/blob/gh-pages/cheat%20sheet.txt)
 
 [PPU Emulation](https://www.nesdev.com/NES%20emulator%20development%20guide.txt)
+
+[Writing NES Emulator in Rust](https://bugzmanov.github.io/nes_ebook/chapter_6_2.html)
+
+[NES Emulation in Detail](https://www.middle-engine.com/blog/posts/2020/06/23/programming-the-nes-the-6502-in-detail)
 
 

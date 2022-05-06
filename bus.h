@@ -11,7 +11,7 @@ typedef uint16_t byte2;
 class bus{
     public:
         cpu cpu;
-        std::array<byte, 64*1024> RAM;
+        std::array<byte, 65536> RAM;
         void write(byte2 address, byte data);
         byte read(byte2 address);
 };

@@ -36,19 +36,69 @@ cpu::cpu(){
 
 void cpu::reset(){
     // registers are set to 0x00, status cleared except unused flag, absolute address = 0xFFFC, PC = address at absolute address, then all registers reset, number of cycles taken = 8
-    a = 0x00;
-    x = 0x00;
-    y = 0x00;
+    registers.a = 0x00;
+    registers.x = 0x00;
+    registers.y = 0x00;
+	cycles = 8;
 
 	absAddress = 0xFFFC;
 	byte highbit = read(absAddress);
 	byte lowbit = read(absAddress + 1);
-	pc = (highbit << 8) | (lowbit);
+	registers.pc = (highbit << 8) | (lowbit);
 
-	stack = 0xFD;
-    status = 0x00 | reserved; //result of OR is 1 if any of the two bits is 1
+	registers.stack = 0xFD;
+    registers.status = 0x00 | reserved; //result of OR is 1 if any of the two bits is 1
 	absAddress = 0x000; // absolute address = 0
 	relAddress = 0x00; //relative address = 0
 	fetched = 0x00;
+}
+
+//can happen if disable irq flag = 0, current instruction finishes b4 calling this irq, PC on stack, status register on stack, after this PC set to 0xFFFE 
+void cpu::irq(){
+	if(getFlag(interrupt_disable) == 0){
+		cycles = 7;
+		// PC on stack
+		// status on stack
+		write(0x100 + registers.stack, (registers.pc >> 8) & 0xFF);
+		registers.stack--; // stack pointer changed after each write to it
+		 // fixed at RAM address $100, so can address $100-$1ff
+		write(0x100 + registers.stack, registers.pc & 0xFF);
+		registers.stack--;
+		/** since only 8 bytes can be written at a time in our function, pc is written twice
+		 * to extract the first 8 bytes, first pc is pushed 8 bits to the right
+		 * bit masking to reduce the range to 0-255/make sure the left bits are 0
+		 **/
+
+		write(0x100 + registers.stack, registers.status); // do i change any values of the status reg before pushing to stack?
+		registers.stack--;
+
+		// read value from location 0xFFFE, that is new pc address
+		absAddress = 0xFFFE;
+		//unint16_t to make sure shifting does not lose or change the bits
+		byte2 lowAdd = read(absAddress + 0);
+		byte2 highAdd = read(absAddress + 1); 
+
+		registers.pc = (highAdd << 8) | lowAdd;
+
+		// change I = 1
+		setFlag(interrupt_disable, 1);
+		
+		
+	}
+}
+
+// same as irq, but reads from 0xFFFA and NMI cannot be ignored so flag checking not required
+void cpu::nmi(){
 	cycles = 8;
+
+	//write PC to absAddress
+	write(0x100 + registers.stack, (registers.pc >> 8) & 0xFF);
+	write(0x100 + registers.stack, registers.pc & 0xFF); // stack pointer + 0x100 = actual location
+	
+	// hardware interrupts change B to 0 b4 pushing to stack
+	setFlag(bbreak, 0);
+	write(0x100 + registers.stack, registers.status);
+
+
+	
 }
