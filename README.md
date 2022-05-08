@@ -43,10 +43,15 @@ Usually, most unofficial opcodes execute the equivalent of a NOP (no operation) 
 
 Some have useful effects that games have made use of, but I have not implemented them yet. This is a good page to look at the usable unofficial opcodes: [NESdev](https://www.nesdev.org/wiki/Programming_with_unofficial_opcodes)
 
+## Clock
+An instruction needs a certain number of clock cycles to execute because each cycle executes a microoperation that together forms the complete instruction. 
+
+Much easier to simply just execute the instruction in one go when emulating, so I've decided to do that itself. However clock cycles are important to sync things like the PPU and the CPU, so waiting the required number of clock cycles before executing the next instruction is still important. 
+
 # Bus
 Buses are simply just wirings between components like the CPU and the memory. Through a bus, the CPU or PPU can read or write to/from the memory. Although, you don't technically need to emulate a bus, I included it because it makes the code a little easier to work with. 
 
-The bus routes interrupts, handles read/writes/memory mapping and coordinates the PPU/CPU timings (super important). 
+The bus routes interrupts, handles read/writes/memory mapping and coordinates the PPU/CPU timings (super important).
 
 ## Mirroring
 As mentioned before, the NES tries to be cheap. As a result, there are a few quirks about the system. Mirroring is one used to reduce the hardware needed to decode addresses. And thus, reduce the cost as well.
@@ -75,18 +80,15 @@ Ex: Attempting to access memory at $0173 is the same as accessing memory at $097
 
 [Mastersheet](https://www.nesdev.com/NES%20emulator%20development%20guide.txt)
 
-[emudev.de](https://emudev.de)
+[6502 Forum](http://forum.6502.org/viewtopic.php?f=2&t=6099)
 
 [Ultimate 6502 Reference](https://www.pagetable.com/c64ref/6502/?tab=3)
 
 [6502 Datasheet](http://archive.6502.org/datasheets/mos_6500_mpu_preliminary_may_1976.pdf)
 
-[NES Mastersheet](https://github.com/xem/nes/blob/gh-pages/cheat%20sheet.txt)
-
 [PPU Emulation](https://www.nesdev.com/NES%20emulator%20development%20guide.txt)
 
 [Writing NES Emulator in Rust](https://bugzmanov.github.io/nes_ebook/chapter_6_2.html)
 
-[NES Emulation in Detail](https://www.middle-engine.com/blog/posts/2020/06/23/programming-the-nes-the-6502-in-detail)
 
 

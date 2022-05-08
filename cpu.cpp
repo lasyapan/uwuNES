@@ -10,6 +10,14 @@ byte cpu::read(byte2 address){
 void cpu::write(byte2 address, byte data){
 	bus->write(address, data);
 }
+
+void cpu::setFlag(flags flag, int val){
+
+}
+
+byte cpu::getFlag(flags flag){
+
+}  
 cpu::cpu(){
         //lookup table constructor 
         const OPCODE opcodes[256] = 
@@ -47,7 +55,7 @@ void cpu::reset(){
 	registers.pc = (highbit << 8) | (lowbit);
 
 	registers.stack = 0xFD;
-    registers.status = 0x00 | reserved; //result of OR is 1 if any of the two bits is 1
+    registers.status = 0x00 | useless; //result of OR is 1 if any of the two bits is 1
 	absAddress = 0x000; // absolute address = 0
 	relAddress = 0x00; //relative address = 0
 	fetched = 0x00;
@@ -57,10 +65,9 @@ void cpu::reset(){
 void cpu::irq(){
 	if(getFlag(interrupt_disable) == 0){
 		cycles = 7;
-		// PC on stack
-		// status on stack
 		write(0x100 + registers.stack, (registers.pc >> 8) & 0xFF);
-		registers.stack--; // stack pointer changed after each write to it
+		registers.stack--; 
+		// stack pointer changed after each write to it
 		 // fixed at RAM address $100, so can address $100-$1ff
 		write(0x100 + registers.stack, registers.pc & 0xFF);
 		registers.stack--;
@@ -69,20 +76,22 @@ void cpu::irq(){
 		 * bit masking to reduce the range to 0-255/make sure the left bits are 0
 		 **/
 
-		write(0x100 + registers.stack, registers.status); // do i change any values of the status reg before pushing to stack?
+		// break and unused only change when pushing to stack, interrupt_disable = 1
+		setFlag(interrupt_disable, 1);
+		setFlag(bbreak, 0);
+		setFlag(useless, 1);
+		write(0x100 + registers.stack, registers.status); 
 		registers.stack--;
 
-		// read value from location 0xFFFE, that is new pc address
+		// read value that is in location 0xFFFE = pc value
 		absAddress = 0xFFFE;
 		//unint16_t to make sure shifting does not lose or change the bits
-		byte2 lowAdd = read(absAddress + 0);
+		byte2 lowAdd = read(absAddress);
 		byte2 highAdd = read(absAddress + 1); 
 
 		registers.pc = (highAdd << 8) | lowAdd;
 
-		// change I = 1
-		setFlag(interrupt_disable, 1);
-		
+
 		
 	}
 }
@@ -95,10 +104,19 @@ void cpu::nmi(){
 	write(0x100 + registers.stack, (registers.pc >> 8) & 0xFF);
 	write(0x100 + registers.stack, registers.pc & 0xFF); // stack pointer + 0x100 = actual location
 	
-	// hardware interrupts change B to 0 b4 pushing to stack
+	// hardware interrupt
+	setFlag(interrupt_disable, 1);
 	setFlag(bbreak, 0);
+	setFlag(useless, 1);
 	write(0x100 + registers.stack, registers.status);
 
 
+	absAddress = 0xFFFA;
+	byte2 lowAdd = read(absAddress);
+	byte2 highAdd = read(absAddress + 1);
+
+	registers.pc = (highAdd << 8) | lowAdd;
+
+	cycles = 8;
 	
 }

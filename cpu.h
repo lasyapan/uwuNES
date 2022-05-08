@@ -21,12 +21,14 @@ class cpu{
 
     
     // Registers for 6502 CPU
+    struct registers{
     byte a = 0x00; // Accumulator register
     byte x = 0x00; // X register
     byte y = 0x00; // Y register
     byte stack = 0x00; // Stack Pointer
     byte2 pc = 0x0000;  // Program Counter
     byte status = 0x00; // Status register
+    } registers;
 
     // Condition codes for 6502 Status register
     enum flags
@@ -34,7 +36,7 @@ class cpu{
         //to modify the status register
         negative = 1 << 7, //1 << 7 => shifted left 7 times
         overflow = 1 << 6,
-        reserved = 1 << 5, //unused
+        useless = 1 << 5, //unused
         bbreak = 1 << 4,
         decimal = 1 << 3,
         interrupt_disable = 1 << 2, // 0 = no, 1 = yes
