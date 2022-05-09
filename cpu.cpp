@@ -4,6 +4,7 @@
 
 using namespace std;
 
+// imp functions
 byte cpu::read(byte2 address){
 	return bus->read(address);
 }
@@ -12,14 +13,18 @@ void cpu::write(byte2 address, byte data){
 }
 
 void cpu::setFlag(flags flag, int val){
-	registers.status = 
+	if (val == 1){
+		registers.status |= flag;
+		// 1 | 0 = 1, 1 | 1 = 1, 0 | 1 = 1
+	}
+	else{
+		registers.status &= flag;
+		// 0 & 0 = 1, 1 & 0 = 0, 0 & 1 = 0
+	}
 }
 
 byte cpu::getFlag(flags flag){
-	if(registers.status & flag > 0){
-		return 1;
-	}
-	return 0;
+	return (registers.status & flag > 0) ? 1 : 0;
 }  
 cpu::cpu(){
         //lookup table constructor 
@@ -45,6 +50,7 @@ cpu::cpu(){
     
 }
 
+// interrupts
 void cpu::reset(){
     // registers are set to 0x00, status cleared except unused flag, absolute address = 0xFFFC, PC = address at absolute address, then all registers reset, number of cycles taken = 8
     registers.a = 0x00;
@@ -127,3 +133,6 @@ void cpu::clock(){
 	
 }
 
+// addressing modes
+
+// opcodes

@@ -141,7 +141,7 @@ class cpu{
 
     byte absAddress = 0x00;
     byte relAddress = 0x00;
-    byte cycles; //current cycles
+    byte cycles; //current cycles 
     byte opcode;
 
 
