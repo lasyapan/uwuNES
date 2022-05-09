@@ -12,11 +12,14 @@ void cpu::write(byte2 address, byte data){
 }
 
 void cpu::setFlag(flags flag, int val){
-
+	registers.status = 
 }
 
 byte cpu::getFlag(flags flag){
-
+	if(registers.status & flag > 0){
+		return 1;
+	}
+	return 0;
 }  
 cpu::cpu(){
         //lookup table constructor 
@@ -91,7 +94,6 @@ void cpu::irq(){
 
 		registers.pc = (highAdd << 8) | lowAdd;
 
-
 		
 	}
 }
@@ -120,3 +122,8 @@ void cpu::nmi(){
 	cycles = 8;
 	
 }
+
+void cpu::clock(){
+	
+}
+

@@ -1,6 +1,6 @@
 # uwuNES
 
-uwuNES is a Nintendo Entertainment System emulator written in C++. It's named uwuNES because I saw someone call theirs NESchan and I found it funny. I referred to various source code on the internet, mostly following 
+uwuNES is a Nintendo Entertainment System emulator written in C++. It's named uwuNES because I saw someone call theirs NESchan and I found it funny.
 
 # CPU
 ## MOS 6502
@@ -47,6 +47,8 @@ Some have useful effects that games have made use of, but I have not implemented
 An instruction needs a certain number of clock cycles to execute because each cycle executes a microoperation that together forms the complete instruction. 
 
 Much easier to simply just execute the instruction in one go when emulating, so I've decided to do that itself. However clock cycles are important to sync things like the PPU and the CPU, so waiting the required number of clock cycles before executing the next instruction is still important. 
+
+Although, running at NES' native speed would need a cycle-accurate emulator.
 
 # Bus
 Buses are simply just wirings between components like the CPU and the memory. Through a bus, the CPU or PPU can read or write to/from the memory. Although, you don't technically need to emulate a bus, I included it because it makes the code a little easier to work with. 
