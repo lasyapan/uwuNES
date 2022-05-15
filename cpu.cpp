@@ -28,16 +28,16 @@ byte cpu::getFlag(flags flag){
 }  
 cpu::cpu(){
         //lookup table constructor 
-        const OPCODE opcodes[256] = 
+        OPCODE lookupcode[256] = 
 	{
-		{ "BRK", cpu::BRK, cpu::IMP, 7 },{ "ORA", cpu::ORA, cpu::INX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 3 },{ "ORA", cpu::ORA, cpu::ZPO, 3 },{ "ASL", cpu::ASL, cpu::ZPO, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PHP", cpu::PHP, cpu::IMP, 3 },{ "ORA", cpu::ORA, cpu::IMM, 2 },{ "ASL", cpu::ASL, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ORA", cpu::ORA, cpu::ABS, 4 },{ "ASL", cpu::ASL, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
+		{ "BRK", cpu::BRK, cpu::IMP, 7 },{ "ORA", cpu::ORA, cpu::INX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 3 },{ "ORA", cpu::ORA, cpu::ZPO, 3 },{ "ASL", cpu::ASL, cpu::ZPO, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PHP", cpu::PHP, cpu::IMP, 3 },{ "ORA", cpu::ORA, cpu::IMM, 2 },{ "ASL", cpu::ASL, cpu::ACC, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ORA", cpu::ORA, cpu::ABS, 4 },{ "ASL", cpu::ASL, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
 		{ "BPL", cpu::BPL, cpu::REL, 2 },{ "ORA", cpu::ORA, cpu::INY, 5 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ORA", cpu::ORA, cpu::ZPX, 4 },{ "ASL", cpu::ASL, cpu::ZPX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "CLC", cpu::CLC, cpu::IMP, 2 },{ "ORA", cpu::ORA, cpu::ABY, 4 },{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 7 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ORA", cpu::ORA, cpu::ABX, 4 },{ "ASL", cpu::ASL, cpu::ABX, 7 },{ "UNO", cpu::UNO, cpu::IMP, 7 },
-		{ "JSR", cpu::JSR, cpu::ABS, 6 },{ "AND", cpu::AND, cpu::INX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "BIT", cpu::BIT, cpu::ZPO, 3 },{ "AND", cpu::AND, cpu::ZPO, 3 },{ "ROL", cpu::ROL, cpu::ZPO, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PLP", cpu::PLP, cpu::IMP, 4 },{ "AND", cpu::AND, cpu::IMM, 2 },{ "ROL", cpu::ROL, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "BIT", cpu::BIT, cpu::ABS, 4 },{ "AND", cpu::AND, cpu::ABS, 4 },{ "ROL", cpu::ROL, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
+		{ "JSR", cpu::JSR, cpu::ABS, 6 },{ "AND", cpu::AND, cpu::INX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "BIT", cpu::BIT, cpu::ZPO, 3 },{ "AND", cpu::AND, cpu::ZPO, 3 },{ "ROL", cpu::ROL, cpu::ZPO, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PLP", cpu::PLP, cpu::IMP, 4 },{ "AND", cpu::AND, cpu::IMM, 2 },{ "ROL", cpu::ROL, cpu::ACC, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "BIT", cpu::BIT, cpu::ABS, 4 },{ "AND", cpu::AND, cpu::ABS, 4 },{ "ROL", cpu::ROL, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
 		{ "BMI", cpu::BMI, cpu::REL, 2 },{ "AND", cpu::AND, cpu::INY, 5 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "AND", cpu::AND, cpu::ZPX, 4 },{ "ROL", cpu::ROL, cpu::ZPX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "SEC", cpu::SEC, cpu::IMP, 2 },{ "AND", cpu::AND, cpu::ABY, 4 },{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 7 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "AND", cpu::AND, cpu::ABX, 4 },{ "ROL", cpu::ROL, cpu::ABX, 7 },{ "UNO", cpu::UNO, cpu::IMP, 7 },
-		{ "RTI", cpu::RTI, cpu::IMP, 6 },{ "EOR", cpu::EOR, cpu::INX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 3 },{ "EOR", cpu::EOR, cpu::ZPO, 3 },{ "LSR", cpu::LSR, cpu::ZPO, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PHA", cpu::PHA, cpu::IMP, 3 },{ "EOR", cpu::EOR, cpu::IMM, 2 },{ "LSR", cpu::LSR, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "JMP", cpu::JMP, cpu::ABS, 3 },{ "EOR", cpu::EOR, cpu::ABS, 4 },{ "LSR", cpu::LSR, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
+		{ "RTI", cpu::RTI, cpu::IMP, 6 },{ "EOR", cpu::EOR, cpu::INX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 3 },{ "EOR", cpu::EOR, cpu::ZPO, 3 },{ "LSR", cpu::LSR, cpu::ZPO, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PHA", cpu::PHA, cpu::IMP, 3 },{ "EOR", cpu::EOR, cpu::IMM, 2 },{ "LSR", cpu::LSR, cpu::ACC, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "JMP", cpu::JMP, cpu::ABS, 3 },{ "EOR", cpu::EOR, cpu::ABS, 4 },{ "LSR", cpu::LSR, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
 		{ "BVC", cpu::BVC, cpu::REL, 2 },{ "EOR", cpu::EOR, cpu::INY, 5 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "EOR", cpu::EOR, cpu::ZPX, 4 },{ "LSR", cpu::LSR, cpu::ZPX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "CLI", cpu::CLI, cpu::IMP, 2 },{ "EOR", cpu::EOR, cpu::ABY, 4 },{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 7 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "EOR", cpu::EOR, cpu::ABX, 4 },{ "LSR", cpu::LSR, cpu::ABX, 7 },{ "UNO", cpu::UNO, cpu::IMP, 7 },
 		{ "RTS", cpu::RTS, cpu::IMP, 6 },{ "ADC", cpu::ADC, cpu::INX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 3 },{ "ADC", cpu::ADC, cpu::ZPO, 3 },{ "ROR", cpu::ROR, cpu::ZPO, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "PLA", cpu::PLA, cpu::IMP, 4 },{ "ADC", cpu::ADC, cpu::IMM, 2 },{ "ROR", cpu::ROR, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "JMP", cpu::JMP, cpu::ABI, 5 },{ "ADC", cpu::ADC, cpu::ABS, 4 },{ "ROR", cpu::ROR, cpu::ABS, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },
-		{ "BVS", cpu::BVS, cpu::REL, 2 },{ "ADC", cpu::ADC, cpu::INY, 5 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ADC", cpu::ADC, cpu::ZPX, 4 },{ "ROR", cpu::ROR, cpu::ZPX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "SEI", cpu::SEI, cpu::IMP, 2 },{ "ADC", cpu::ADC, cpu::ABY, 4 },{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 7 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ADC", cpu::ADC, cpu::ABX, 4 },{ "ROR", cpu::ROR, cpu::ABX, 7 },{ "UNO", cpu::UNO, cpu::IMP, 7 },
+		{ "BVS", cpu::BVS, cpu::REL, 2 },{ "ADC", cpu::ADC, cpu::INY, 5 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 8 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ADC", cpu::ADC, cpu::ZPX, 4 },{ "ROR", cpu::ROR, cpu::ZPX, 6 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "SEI", cpu::SEI, cpu::IMP, 2 },{ "ADC", cpu::ADC, cpu::ABY, 4 },{ "UNO", cpu::NOP, cpu::ACC, 2 },{ "UNO", cpu::UNO, cpu::IMP, 7 },{ "UNO", cpu::NOP, cpu::IMP, 4 },{ "ADC", cpu::ADC, cpu::ABX, 4 },{ "ROR", cpu::ROR, cpu::ABX, 7 },{ "UNO", cpu::UNO, cpu::IMP, 7 },
 		{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "STA", cpu::STA, cpu::INX, 6 },{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "STY", cpu::STY, cpu::ZPO, 3 },{ "STA", cpu::STA, cpu::ZPO, 3 },{ "STX", cpu::STX, cpu::ZPO, 3 },{ "UNO", cpu::UNO, cpu::IMP, 3 },{ "DEY", cpu::DEY, cpu::IMP, 2 },{ "UNO", cpu::NOP, cpu::IMP, 2 },{ "TXA", cpu::TXA, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "STY", cpu::STY, cpu::ABS, 4 },{ "STA", cpu::STA, cpu::ABS, 4 },{ "STX", cpu::STX, cpu::ABS, 4 },{ "UNO", cpu::UNO, cpu::IMP, 4 },
 		{ "BCC", cpu::BCC, cpu::REL, 2 },{ "STA", cpu::STA, cpu::INY, 6 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "STY", cpu::STY, cpu::ZPX, 4 },{ "STA", cpu::STA, cpu::ZPX, 4 },{ "STX", cpu::STX, cpu::ZPY, 4 },{ "UNO", cpu::UNO, cpu::IMP, 4 },{ "TYA", cpu::TYA, cpu::IMP, 2 },{ "STA", cpu::STA, cpu::ABY, 5 },{ "TXS", cpu::TXS, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "UNO", cpu::NOP, cpu::IMP, 5 },{ "STA", cpu::STA, cpu::ABX, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },{ "UNO", cpu::UNO, cpu::IMP, 5 },
 		{ "LDY", cpu::LDY, cpu::IMM, 2 },{ "LDA", cpu::LDA, cpu::INX, 6 },{ "LDX", cpu::LDX, cpu::IMM, 2 },{ "UNO", cpu::UNO, cpu::IMP, 6 },{ "LDY", cpu::LDY, cpu::ZPO, 3 },{ "LDA", cpu::LDA, cpu::ZPO, 3 },{ "LDX", cpu::LDX, cpu::ZPO, 3 },{ "UNO", cpu::UNO, cpu::IMP, 3 },{ "TAY", cpu::TAY, cpu::IMP, 2 },{ "LDA", cpu::LDA, cpu::IMM, 2 },{ "TAX", cpu::TAX, cpu::IMP, 2 },{ "UNO", cpu::UNO, cpu::IMP, 2 },{ "LDY", cpu::LDY, cpu::ABS, 4 },{ "LDA", cpu::LDA, cpu::ABS, 4 },{ "LDX", cpu::LDX, cpu::ABS, 4 },{ "UNO", cpu::UNO, cpu::IMP, 4 },
@@ -67,7 +67,7 @@ void cpu::reset(){
     registers.status = 0x00 | useless; //result of OR is 1 if any of the two bits is 1
 	absAddress = 0x000; // absolute address = 0
 	relAddress = 0x00; //relative address = 0
-	fetched = 0x00;
+	dataFetched = 0x00;
 }
 
 //can happen if disable irq flag = 0, current instruction finishes b4 calling this irq, PC on stack, status register on stack, after this PC set to 0xFFFE 
@@ -129,10 +129,88 @@ void cpu::nmi(){
 	
 }
 
-void cpu::clock(){
-	
+// counts down a clock cycle, does nothing else
+void cpu::sync(){
+	if(cycles == 0){
+		opcode = read(registers.pc);
+		registers.pc++;
+		cycles = lookupcode[opcode].cycle;
+		//additional cycles will just update the cycles variable themselves
+	}
+
+	cycles--;
 }
 
-// addressing modes
+// addressing modes reference: https://www.pagetable.com/c64ref/6502/?tab=3
+void cpu::ACC() // implies an operation on the accumulator
+{
+	dataFetched = registers.a;
+	registers.pc++;
+}
+
+void cpu::IMM() // EA = operand
+{
+	registers.pc++;
+	absAddress = registers.pc;
+}
+void cpu::ZPO() // zero page addressing
+{
+	
+}
+void cpu::ZPX()// indexed zero page (x) addressing
+{
+
+}
+void cpu::ZPY()// indexed zero page (y) addressing
+{ 
+	
+}
+void cpu::ABS() // EA = address specified in operand
+{
+	byte low = read(registers.pc);
+	registers.pc++;
+	byte high = read(registers.pc);
+	registers.pc++;
+	absAddress = (high << 8) | low;
+
+}
+void cpu::ABX() // EA = address in operand + X register 
+{
+	byte low = read(registers.pc);
+	registers.pc++;
+	byte high = read(registers.pc);
+	registers.pc++;
+	absAddress = ((high << 8) | low) + registers.x;
+
+	// offset changing the page requires additional clock cycles
+}
+void cpu::ABY() // EA = address in operand + Y register
+{
+	byte low = read(registers.pc);
+	registers.pc++;
+	byte high = read(registers.pc);
+	registers.pc++;
+	absAddress = ((high << 8) | low) + registers.y;
+}
+void cpu::IMP() // implied addressing
+{
+
+}
+void cpu::REL() // relative addressing
+{
+
+}
+void cpu::INX() // indirect indexed (x) addressing
+{
+
+}
+void cpu::INY() // indirect indexed (y) addressing
+{
+
+}
+void cpu::ABI() // absolute indexed addressing
+{
+
+}
 
 // opcodes

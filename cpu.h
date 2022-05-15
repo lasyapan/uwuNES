@@ -52,86 +52,86 @@ class cpu{
     private: 
     // Addressing Mode
   
-    byte ACC(); // accumulator addressing
-    byte IMM(); // immediate addressing
-    byte ZPO(); // zero page addressing
-    byte ZPX(); // indexed zero page (x) addressing
-    byte ZPY(); // indexed zero page (y) addressing
-    byte ABS(); // absolute addressing
-    byte ABX(); // absolute indexed (x) addressing
-    byte ABY(); // absolute indexed (y) addressing
-    byte IMP(); // implied addressing
-    byte REL(); // relative addressing
-    byte INX(); // indirect indexed (x) addressing
-    byte INY(); // indirect indexed (y) addressing
-    byte ABI(); // absolute indexed addressing
+    void ACC(); // accumulator addressing
+    void IMM(); // immediate addressing
+    void ZPO(); // zero page addressing
+    void ZPX(); // indexed zero page (x) addressing
+    void ZPY(); // indexed zero page (y) addressing
+    void ABS(); // absolute addressing
+    void ABX(); // absolute indexed (x) addressing
+    void ABY(); // absolute indexed (y) addressing
+    void IMP(); // implied addressing
+    void REL(); // relative addressing
+    void INX(); // indirect indexed (x) addressing
+    void INY(); // indirect indexed (y) addressing
+    void ABI(); // absolute indexed addressing
 
     // little endian
     
     private: 
     // opcodes
-    byte ADC();
-    byte AND();
-    byte ASL();
-    byte BCC();
-    byte BCS();
-    byte BEQ();
-    byte BIT();
-    byte BMI();
-    byte BNE();
-    byte BPL();
-    byte BRK();
-    byte BVC();
-    byte BVS();
-    byte CLC();
-    byte CLD();
-    byte CLI();
-    byte CLV();
-    byte CMP();
-    byte CPX();
-    byte CPY();
-    byte DEC();
-    byte DEX();
-    byte DEY();
-    byte EOR();
-    byte INC();
-    byte INX();
-    byte INY();
-    byte JMP();
-    byte JSR();
-    byte LDA();
-    byte LDX();
-    byte LDY();
-    byte LSR();
-    byte NOP();
-    byte ORA();
-    byte PHA();
-    byte PHP();
-    byte PLA();
-    byte PLP();
-    byte ROL();
-    byte ROR();
-    byte RTI();
-    byte RTS();
-    byte SBC();
-    byte SEC();
-    byte SED();
-    byte SEI();
-    byte STA();
-    byte STX();
-    byte STY();
-    byte TAX();
-    byte TAY();
-    byte TSX();
-    byte TXA();
-    byte TXS();
-    byte TYA();
-    byte UNO(); // unofficial opcodes (nop)
+    void ADC();
+    void AND();
+    void ASL();
+    void BCC();
+    void BCS();
+    void BEQ();
+    void BIT();
+    void BMI();
+    void BNE();
+    void BPL();
+    void BRK();
+    void BVC();
+    void BVS();
+    void CLC();
+    void CLD();
+    void CLI();
+    void CLV();
+    void CMP();
+    void CPX();
+    void CPY();
+    void DEC();
+    void DEX();
+    void DEY();
+    void EOR();
+    void INC();
+    void INX();
+    void INY();
+    void JMP();
+    void JSR();
+    void LDA();
+    void LDX();
+    void LDY();
+    void LSR();
+    void NOP();
+    void ORA();
+    void PHA();
+    void PHP();
+    void PLA();
+    void PLP();
+    void ROL();
+    void ROR();
+    void RTI();
+    void RTS();
+    void SBC();
+    void SEC();
+    void SED();
+    void SEI();
+    void STA();
+    void STX();
+    void STY();
+    void TAX();
+    void TAY();
+    void TSX();
+    void TXA();
+    void TXS();
+    void TYA();
+    void UNO(); // unofficial opcodes (nop)
 
     struct OPCODE{
         std::string num; 
-        byte (cpu::*opcode) (void) = NULL; // function pointer to implementation of opcode
-        byte (cpu::*address) (void) = NULL; // function pointer to addressing mode
+        void (cpu::*operation) (void) = NULL; // function pointer to implementation of opcode
+        void (cpu::*address) (void) = NULL; // function pointer to addressing mode
         byte cycle = 0;
     };
 
@@ -139,16 +139,14 @@ class cpu{
     byte getFlag(flags flag);
     void setFlag(flags flag, int val);
 
-    byte absAddress = 0x00;
-    byte relAddress = 0x00;
+    byte2 absAddress = 0x00;
+    byte2 relAddress = 0x00;
     byte cycles; //current cycles 
     byte opcode;
 
-
-    bool complete(); // if complete, cycle++ instead of counting
+    OPCODE lookupcode[256];
     byte fetch();
-    byte fetched;
-    void clock();
+    byte dataFetched;
 
-    
+   
  };
