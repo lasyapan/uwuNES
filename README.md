@@ -50,6 +50,9 @@ Much easier to simply just execute the instruction in one go when emulating, so 
 
 Although, running at NES' native speed would need a cycle-accurate emulator.
 
+## Page Boundaries
+A chunk of 256 bytes together is called a page. During certain address modes, like indexed addressing, an offset is added to the operand. As a result, the high byte of the EA might need to be corrected which results in an extra clock cycle. 
+
 # Bus
 Buses are simply just wirings between components like the CPU and the memory. Through a bus, the CPU or PPU can read or write to/from the memory. Although, you don't technically need to emulate a bus, I included it because it makes the code a little easier to work with. 
 

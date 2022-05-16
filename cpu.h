@@ -139,7 +139,7 @@ class cpu{
     byte getFlag(flags flag);
     void setFlag(flags flag, int val);
 
-    byte2 absAddress = 0x00;
+    byte2 effAddress = 0x00; // effective address
     byte2 relAddress = 0x00;
     byte cycles; //current cycles 
     byte opcode;

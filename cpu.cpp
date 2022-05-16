@@ -58,14 +58,14 @@ void cpu::reset(){
     registers.y = 0x00;
 	cycles = 8;
 
-	absAddress = 0xFFFC;
-	byte highbit = read(absAddress);
-	byte lowbit = read(absAddress + 1);
+	effAddress = 0xFFFC;
+	byte highbit = read(effAddress);
+	byte lowbit = read(effAddress + 1);
 	registers.pc = (highbit << 8) | (lowbit);
 
 	registers.stack = 0xFD;
     registers.status = 0x00 | useless; //result of OR is 1 if any of the two bits is 1
-	absAddress = 0x000; // absolute address = 0
+	effAddress = 0x000; // absolute address = 0
 	relAddress = 0x00; //relative address = 0
 	dataFetched = 0x00;
 }
@@ -93,10 +93,10 @@ void cpu::irq(){
 		registers.stack--;
 
 		// read value that is in location 0xFFFE = pc value
-		absAddress = 0xFFFE;
+		effAddress = 0xFFFE;
 		//unint16_t to make sure shifting does not lose or change the bits
-		byte2 lowAdd = read(absAddress);
-		byte2 highAdd = read(absAddress + 1); 
+		byte2 lowAdd = read(effAddress);
+		byte2 highAdd = read(effAddress + 1); 
 
 		registers.pc = (highAdd << 8) | lowAdd;
 
@@ -108,7 +108,7 @@ void cpu::irq(){
 void cpu::nmi(){
 	cycles = 8;
 
-	//write PC to absAddress
+	//write PC to effAddress
 	write(0x100 + registers.stack, (registers.pc >> 8) & 0xFF);
 	write(0x100 + registers.stack, registers.pc & 0xFF); // stack pointer + 0x100 = actual location
 	
@@ -119,9 +119,9 @@ void cpu::nmi(){
 	write(0x100 + registers.stack, registers.status);
 
 
-	absAddress = 0xFFFA;
-	byte2 lowAdd = read(absAddress);
-	byte2 highAdd = read(absAddress + 1);
+	effAddress = 0xFFFA;
+	byte2 lowAdd = read(effAddress);
+	byte2 highAdd = read(effAddress + 1);
 
 	registers.pc = (highAdd << 8) | lowAdd;
 
@@ -151,19 +151,44 @@ void cpu::ACC() // implies an operation on the accumulator
 void cpu::IMM() // EA = operand
 {
 	registers.pc++;
-	absAddress = registers.pc;
+	effAddress = registers.pc;
 }
-void cpu::ZPO() // zero page addressing
+void cpu::ZPO() // operand is of the form $FF as opposed to $00FF, high byte is assumed to be 0
 {
-	
+	byte low = read(registers.pc);
+	byte high = 0x00;
+	effAddress = (high << 8) | low;
+	registers.pc++;
 }
-void cpu::ZPX()// indexed zero page (x) addressing
+void cpu::ZPX()// zero page operand + x register offset
 {
-
+	byte low = read(registers.pc);
+	byte high = 0x00;
+	effAddress = (high << 8) | low;
+	registers.pc++;
+	low += registers.x & 0xFF; 
+	effAddress = (high << 8) | low;
+	// offset changing the page requires additional clock cycles
+	if (effAddress > (high << 8)){
+		cycles++;
+		high = (high + 1) & 0xFF;
+		effAddress = (high << 8) | low;
+	}
 }
 void cpu::ZPY()// indexed zero page (y) addressing
 { 
-	
+	byte low = read(registers.pc);
+	byte high = 0x00;
+	effAddress = (high << 8) | low;
+	registers.pc++;
+	low += registers.y & 0xFF; 
+	effAddress = (high << 8) | low;
+	// offset changing the page requires additional clock cycles
+	if (effAddress > (high << 8)){
+		cycles++;
+		high = (high + 1) & 0xFF;
+		effAddress = (high << 8) | low;
+	}
 }
 void cpu::ABS() // EA = address specified in operand
 {
@@ -171,7 +196,7 @@ void cpu::ABS() // EA = address specified in operand
 	registers.pc++;
 	byte high = read(registers.pc);
 	registers.pc++;
-	absAddress = (high << 8) | low;
+	effAddress = (high << 8) | low;
 
 }
 void cpu::ABX() // EA = address in operand + X register 
@@ -180,9 +205,14 @@ void cpu::ABX() // EA = address in operand + X register
 	registers.pc++;
 	byte high = read(registers.pc);
 	registers.pc++;
-	absAddress = ((high << 8) | low) + registers.x;
-
+	low += registers.x & 0xFF; 
+	effAddress = (high << 8) | low;
 	// offset changing the page requires additional clock cycles
+	if (effAddress > (high << 8)){
+		cycles++;
+		high = (high + 1) & 0xFF;
+		effAddress = (high << 8) | low;
+	}
 }
 void cpu::ABY() // EA = address in operand + Y register
 {
@@ -190,26 +220,73 @@ void cpu::ABY() // EA = address in operand + Y register
 	registers.pc++;
 	byte high = read(registers.pc);
 	registers.pc++;
-	absAddress = ((high << 8) | low) + registers.y;
+	low += registers.y & 0xFF; 
+	effAddress = (high << 8) | low;
+	// offset changing the page requires additional clock cycles
+	if (effAddress > (high << 8)){
+		cycles++;
+		high = (high + 1) & 0xFF;
+		effAddress = (high << 8) | low;
+	}
 }
-void cpu::IMP() // implied addressing
+void cpu::IMP() // mostly just does something like change status bits
 {
+	dataFetched = registers.status;
+}
+void cpu::REL() // for branch instructions EA = pc + offset but offset can be -128 to +127
+{
+	relAddress = read(registers.pc);
+	registers.pc++;
+	if (relAddress & 0x80 != 0) // if the higher byte is set, it means our offset is negative
+	{
+		relAddress |= 0xFF00; // As a result, we append 1 to the MSB indicating it's a negative hex number
+	}
 
 }
-void cpu::REL() // relative addressing
+void cpu::INX() // pc val -> holds address (add1) -> that address (add1) holds another address (add2)
+// EA = add2 + x reg
 {
+	byte2 pcadd = read(registers.pc);
+	registers.pc++;
+
+	byte2 low = read((byte2)pcadd + (byte2)registers.x);
+	byte2 high = read((byte2)pcadd + (byte2)registers.x + 1); 
+
+	effAddress = (high << 8) | low;
 
 }
-void cpu::INX() // indirect indexed (x) addressing
+void cpu::INY() // pc val -> holds address (add1) -> that address (add1) holds another address (add2)
+// EA = add2 + y reg
 {
+	byte2 pcadd = read(registers.pc);
+	registers.pc++;
 
-}
-void cpu::INY() // indirect indexed (y) addressing
-{
+	byte2 low = read((byte2)pcadd + (byte2)registers.y);
+	byte2 high = read((byte2)pcadd + (byte2)registers.y + 1); 
 
+	effAddress = (high << 8) | low;
 }
-void cpu::ABI() // absolute indexed addressing
+
+void cpu::ABI() // pc val -> holds address (add1) -> that address (add1) holds another address (add2)
+// EA = add2 AKA pointers
 {
+	byte2 low = read(registers.pc);
+	registers.pc++;
+	byte2 high = read(registers.pc);
+	registers.pc++;
+
+	byte2 ptr = read((high << 8) | low);
+
+	//hardware bug = if low byte is 0xFF, high byte is + 1 (page boundary)
+	// instead, chip wraps around to same page
+
+	if(low == 0xFF){ // 
+		effAddress = (read(ptr & 0xFF00) << 8) | read(ptr);
+		// 0x__FF & 0xFF00 will be 0
+	} 
+	else{
+		effAddress = (read(ptr + 1) << 8) | read(ptr);
+	}
 
 }
 
