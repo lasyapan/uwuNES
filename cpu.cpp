@@ -142,6 +142,7 @@ void cpu::sync(){
 }
 
 // addressing modes reference: https://www.pagetable.com/c64ref/6502/?tab=3
+// https://www.nesdev.org/wiki/CPU_addressing_modes,k
 void cpu::ACC() // implies an operation on the accumulator
 {
 	dataFetched = registers.a;
@@ -205,7 +206,7 @@ void cpu::ABX() // EA = address in operand + X register
 	registers.pc++;
 	byte high = read(registers.pc);
 	registers.pc++;
-	low += registers.x & 0xFF; 
+	low += registers.x; 
 	effAddress = (high << 8) | low;
 	// offset changing the page requires additional clock cycles
 	if (effAddress > (high << 8)){
@@ -220,7 +221,7 @@ void cpu::ABY() // EA = address in operand + Y register
 	registers.pc++;
 	byte high = read(registers.pc);
 	registers.pc++;
-	low += registers.y & 0xFF; 
+	low += registers.y;
 	effAddress = (high << 8) | low;
 	// offset changing the page requires additional clock cycles
 	if (effAddress > (high << 8)){
@@ -261,10 +262,13 @@ void cpu::INY() // pc val -> holds address (add1) -> that address (add1) holds a
 	byte2 pcadd = read(registers.pc);
 	registers.pc++;
 
-	byte2 low = read((byte2)pcadd + (byte2)registers.y);
-	byte2 high = read((byte2)pcadd + (byte2)registers.y + 1); 
+	byte2 low = read((byte2)pcadd & 0xFF);
+	byte2 high = read((byte2)(pcadd + 1) & 0xFF); 
 
 	effAddress = (high << 8) | low;
+	effAddress += registers.y;
+	
+	
 }
 
 void cpu::ABI() // pc val -> holds address (add1) -> that address (add1) holds another address (add2)
