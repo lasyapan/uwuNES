@@ -8,6 +8,7 @@ bus::bus(){
     // connects cpu to bus, reset ram to 0
 }
 
+
 void bus::write(byte2 address, byte data){
     if(address >= 0x0000 && address <= 0xFFFF){
         RAM[address] = data;

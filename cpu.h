@@ -145,7 +145,7 @@ class cpu{
     byte opcode;
 
     OPCODE lookupcode[256];
-    byte fetch();
+    void fetch();
     byte dataFetched;
 
    

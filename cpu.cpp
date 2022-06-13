@@ -255,6 +255,13 @@ void cpu::INX() // pc val -> holds address (add1) -> that address (add1) holds a
 
 	effAddress = (high << 8) | low;
 
+	// adding y to EA could result in a page flip
+	if((effAddress & 0xFF00 == high << 8) == 0){
+		// EA & 0xFF gives high byte of EA and comparing it with the high byte before offset addition
+		// will tell us if the page has changed. This requires a cycle++.
+		cycles++;
+	}
+
 }
 void cpu::INY() // pc val -> holds address (add1) -> that address (add1) holds another address (add2)
 // EA = add2 + y reg
@@ -267,7 +274,7 @@ void cpu::INY() // pc val -> holds address (add1) -> that address (add1) holds a
 
 	effAddress = (high << 8) | low;
 	effAddress += registers.y;
-	
+
 	
 }
 
@@ -294,4 +301,62 @@ void cpu::ABI() // pc val -> holds address (add1) -> that address (add1) holds a
 
 }
 
+void cpu::fetch(){
+	if(lookupcode[opcode].address != cpu::IMP || lookupcode[opcode].address != cpu::ACC)
+	dataFetched = read(effAddress);
+}
+
 // opcodes
+void cpu::ADC(){
+// Acc + [Memory] + Carry
+// overflow happens during 
+	fetch();
+	byte final = dataFetched + registers.a + getFlag(carry);
+	setFlag(carry, final > 255); //sets the carry flag when the sum of a binary add exceeds 255 or when the sum of a decimal add exceeds 99
+	setFlag(zero, registers.a == 0);
+	setFlag(negative, final >> 7);
+	setFlag(o)
+
+
+
+	
+
+}
+void cpu::AND(){
+
+}
+void cpu::ASL(){
+
+}
+void cpu::BCC(){
+
+}
+void cpu::BCS(){
+
+}
+void cpu::BEQ(){
+
+}
+void cpu::BIT(){
+	
+}
+void cpu::BMI(){
+
+}
+void cpu::BNE(){
+
+}
+void cpu::BPL(){
+
+}
+void cpu::BRK(){
+
+}
+void cpu::BVC(){
+
+}
+void cpu::BVS(){
+
+}
+
+
