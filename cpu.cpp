@@ -309,24 +309,28 @@ void cpu::fetch(){
 // opcodes
 void cpu::ADC(){
 // Acc + [Memory] + Carry
-// overflow happens during 
+// overflow happens during diff sign bits being added
 	fetch();
 	byte final = dataFetched + registers.a + getFlag(carry);
 	setFlag(carry, final > 255); //sets the carry flag when the sum of a binary add exceeds 255 or when the sum of a decimal add exceeds 99
 	setFlag(zero, registers.a == 0);
 	setFlag(negative, final >> 7);
-	setFlag(o)
-
-
-
-	
+	// overflow = same sign bits producing diff sign result
+	// (~(a ^ b)) => 1 if signs are equal
+	// a ^ c => check if result bit sign is diff
+	setFlag(o, (~(dataFetched ^ registers.a)) & (dataFetched ^ final) & 0x80);
 
 }
 void cpu::AND(){
-
+	// Acc ^ [Memory] => Accumulator
+	fetch();
+	byte final = dataFetched & registers.a;
+	setFlag(negative, final & 0x80);
+	setFlag(zero, final == 0x00);
+	registers.a = final;
 }
 void cpu::ASL(){
-
+	// shifts accumulator one bit to the left
 }
 void cpu::BCC(){
 
