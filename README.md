@@ -1,6 +1,6 @@
-# binkNES
+# uwuNES
 
-binkNES is a Nintendo Entertainment System emulator written in C++. Previously called uwuNES because I found that funny, but now it's just an inside joke I'd like to preserve for my sake. 
+Name has no relevance, I just have nothing good to call it as of the moment.
 
 # CPU
 ## MOS 6502
