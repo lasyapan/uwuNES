@@ -330,16 +330,44 @@ void cpu::AND(){
 	registers.a = final;
 }
 void cpu::ASL(){
-	// shifts accumulator one bit to the left
+	// shifts one bit to the left
+	fetch();
+	byte final = dataFetched << 1;
+	setFlag(negative, final & 0x80);
+	setFlag(zero, final == 0x00);
+	setFlag(carry, final > 0);
 }
 void cpu::BCC(){
-
+	// branch if carry = 0
+	if(getFlag(carry) == 0){
+		effAddress = registers.pc + relAddress;
+		cycles++;
+		if(effAddress & 0xFF00 != pc & 0xFF00){
+			cycles++;
+		}
+	pc = effAddress;
+	}
 }
 void cpu::BCS(){
-
+	//branch if carry = 1
+	if(getFlag(carry) == 1){
+		effAddress = registers.pc + relAddress;
+		cycles++;
+		if(effAddress & 0xFF00 != pc & 0xFF00){
+			cycles++;
+		}
+	pc = effAddress;
+	}
 }
 void cpu::BEQ(){
-
+	if(getFlag(zero) == 1){
+		effAddress = registers.pc + relAddress;
+		cycles++;
+		if(effAddress & 0xFF00 != pc & 0xFF00){
+			cycles++;
+		}
+	pc = effAddress;
+	}
 }
 void cpu::BIT(){
 	
