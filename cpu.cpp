@@ -381,7 +381,7 @@ void cpu::BIT(){
 void cpu::BMI(){
 	// branch when N = 1
 	if(getFlag(negative) == 1){
-		fetch();
+		cycles++;
 		effAddress = registers.pc + relAddress;
 		if(effAddress & 0x80 != registers.pc & 0x80){
 			cycles++;
@@ -391,7 +391,15 @@ void cpu::BMI(){
 
 }
 void cpu::BNE(){
-
+	// branch if result not 0
+	if(getFlag(zero) == 0){
+		cycles++;
+		effAddress = registers.pc + relAddress;
+		if(effAddress & 0x80 != registers.pc & 0x80){
+			cycles++;
+		}
+		registers.pc = effAddress;
+	}
 }
 void cpu::BPL(){
 
