@@ -370,9 +370,24 @@ void cpu::BEQ(){
 	}
 }
 void cpu::BIT(){
-	
+	// [Memory] & Acc, does not store result
+	fetch();
+	byte final = registers.a & dataFetched;
+	setFlag(zero, final == 0);
+	setFlag(negative, final << 7);
+	setFlag(overflow, final << 6);
+	 
 }
 void cpu::BMI(){
+	// branch when N = 1
+	if(getFlag(negative) == 1){
+		fetch();
+		effAddress = registers.pc + relAddress;
+		if(effAddress & 0x80 != registers.pc & 0x80){
+			cycles++;
+		}
+		registers.pc = effAddress;
+	}
 
 }
 void cpu::BNE(){
