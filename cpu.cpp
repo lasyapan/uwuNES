@@ -543,3 +543,27 @@ void cpu::INY(){
 	setFlag(zero, registers.y == 0x00);
 	setFlag(negative, registers.y & 0x80);
 }
+
+void cpu::JMP(){
+	registers.pc = effAddress;
+}
+
+void cpu::JSR(){
+	// push pc -> stack, pc = effAddress
+	// stores pc address of the last byte of jump instruction onto stack
+	registers.pc--;
+	write(0x0100 + registers.stack, (registers.pc >> 8));
+	registers.stack--;
+	write(0x0100 + registers.stack, registers.pc);
+	registers.stack--;
+	registers.pc = effAddress;
+}
+
+void cpu::LDA(){
+	// M -> A
+	fetch();
+	write(registers.a, dataFetched);
+	setFlag(zero, dataFetched == 0);
+	setFlag(negative, dataFetched & 0x0080);
+}
+
