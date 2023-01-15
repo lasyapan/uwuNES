@@ -413,10 +413,15 @@ void cpu::BPL(){
 	}
 }
 void cpu::BRK(){
+	// https://www.pagetable.com/?p=410 for inner workings
 	registers.pc++;
-	// break flag = 1
-	//later
-
+	setFlag(interrupt_disable, 1);
+	write(0x0100 + registers.stack, registers.pc<<8); //stack is from 0x01FF to 0x0100
+	registers.stack--;
+	write(0x0100 + registers.stack, registers.pc);
+	registers.stack--;
+	setFlag(bbreak, 1);
+	registers.pc = (byte2) read((0xFFFF) << 8)| (byte2) read(0xFFEE);
 }
 void cpu::BVC(){
 	// if overflow == 0, branch (pc = effective address)
@@ -461,13 +466,80 @@ void cpu::CLV(){
 }
 
 void cpu::CMP(){
-	// subtracts memory from accumulator (data in there)
-	// fetch data from m$$$emory
+	// fetch data from memory
+	fetch(); 
 	// A - M
+	byte2 temp = registers.a - dataFetched;
 	// A - M = 0, Z flag set
-	// Z reset otherwise
-	// 
-
+	setFlag(zero, temp == 0x0000);
+	// C if accumulator > temp
+	setFlag(carry, registers.a > dataFetched);
+	setFlag(negative, temp & 0x0080);
 }
 
+void cpu::CPX(){ // x - M
+	// fetch data from index register X 
+	fetch();
+	byte2 temp = registers.x - dataFetched;
+	setFlag(carry, registers.x < dataFetched);
+	setFlag(zero, temp == 0x0000);
+	setFlag(negative, temp & 0x0080); // checks MSB if 1 or not
+}
 
+void cpu::CPY(){ // y - M
+	fetch();
+	byte2 temp = registers.y - dataFetched;
+	setFlag(carry, registers.y < dataFetched);
+	setFlag(zero, temp == 0x0000);
+	setFlag(negative, temp & 0x0080);
+}
+
+void cpu::DEC(){ // M - 1 
+	fetch();
+	byte2 temp = dataFetched - 1;
+	write(effAddress, temp);
+	setFlag(negative, temp & 0x0080);
+	setFlag(zero, temp == 0x0000);
+}
+
+void cpu::DEX(){ //x - 1
+	registers.x--;
+	setFlag(zero, registers.x == 0x00);
+	setFlag(negative, registers.x & 0x80); //since registers.x is of byte and not bytw2
+}
+
+void cpu::DEY(){ //y - 1
+	registers.y--;
+	setFlag(zero, registers.y == 0x00);
+	setFlag(negative, registers.y & 0x80);
+}
+
+void cpu::EOR(){ //A xor M -> A
+	fetch();
+	registers.a = registers.a ^ dataFetched;
+	setFlag(zero, registers.a == 0x00);
+	setFlag(negative, registers.a & 0x80);
+}
+
+void cpu::INC(){
+	// M = M++
+	fetch();
+	byte2 temp = dataFetched + 1;
+	write(effAddress, temp);
+	setFlag(negative, temp & 0x0080);
+	setFlag(zero, temp == 0x0000);
+}
+
+void cpu::INX(){
+	// x + 1 = x
+	registers.x++;
+	setFlag(zero, registers.x == 0x00);
+	setFlag(negative, registers.x & 0x80);
+}
+
+void cpu::INY(){
+	// y + 1 = y
+	registers.y++;
+	setFlag(zero, registers.y == 0x00);
+	setFlag(negative, registers.y & 0x80);
+}
