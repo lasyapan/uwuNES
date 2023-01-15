@@ -318,7 +318,7 @@ void cpu::ADC(){
 	// overflow = same sign bits producing diff sign result
 	// (~(a ^ b)) => 1 if signs are equal
 	// a ^ c => check if result bit sign is diff
-	setFlag(o, (~(dataFetched ^ registers.a)) & (dataFetched ^ final) & 0x80);
+	setFlag(overflow, (~(dataFetched ^ registers.a)) & (dataFetched ^ final) & 0x80);
 
 }
 void cpu::AND(){
@@ -342,10 +342,10 @@ void cpu::BCC(){
 	if(getFlag(carry) == 0){
 		effAddress = registers.pc + relAddress;
 		cycles++;
-		if(effAddress & 0xFF00 != pc & 0xFF00){
+		if(effAddress & 0xFF00 != registers.pc & 0xFF00){
 			cycles++;
 		}
-	pc = effAddress;
+	registers.pc = effAddress;
 	}
 }
 void cpu::BCS(){
@@ -353,20 +353,20 @@ void cpu::BCS(){
 	if(getFlag(carry) == 1){
 		effAddress = registers.pc + relAddress;
 		cycles++;
-		if(effAddress & 0xFF00 != pc & 0xFF00){
+		if(effAddress & 0xFF00 != registers.pc & 0xFF00){
 			cycles++;
 		}
-	pc = effAddress;
+	registers.pc = effAddress;
 	}
 }
 void cpu::BEQ(){
 	if(getFlag(zero) == 1){
 		effAddress = registers.pc + relAddress;
 		cycles++;
-		if(effAddress & 0xFF00 != pc & 0xFF00){
+		if(effAddress & 0xFF00 != registers.pc & 0xFF00){
 			cycles++;
 		}
-	pc = effAddress;
+	registers.pc = effAddress;
 	}
 }
 void cpu::BIT(){
@@ -402,15 +402,71 @@ void cpu::BNE(){
 	}
 }
 void cpu::BPL(){
-
+	// Branch on N = 0
+	if(getFlag(negative) == 0){
+		cycles++;
+		effAddress = registers.pc + relAddress;
+		if(effAddress & 0x80 != registers.pc & 0x80){
+			cycles++;
+		}
+		registers.pc = effAddress;
+	}
 }
 void cpu::BRK(){
+	registers.pc++;
+	// break flag = 1
+	//later
 
 }
 void cpu::BVC(){
+	// if overflow == 0, branch (pc = effective address)
+	if(getFlag(overflow) == 0){
+		// branching means forwarding by a relative address
+		effAddress = registers.pc + relAddress;
+		cycles++;
+		// if address isnt equal to the pc value, that means an extra cycle to branch
+		if(effAddress != registers.pc){
+			cycles++;
+		}
+		registers.pc = effAddress;
+	}
 
 }
 void cpu::BVS(){
+	if(getFlag(overflow) == 1){
+		effAddress = registers.pc + relAddress;
+		cycles++;
+		// if address isnt equal to the pc value, that means an extra cycle to branch
+		if(effAddress != registers.pc){
+			cycles++;
+		}
+		registers.pc = effAddress;
+	}
+}
+
+void cpu::CLC(){
+	setFlag(carry, 0);
+}
+
+void cpu::CLD(){
+	setFlag(decimal, 0);
+}
+
+void cpu::CLI(){
+	setFlag(interrupt_disable, 0);
+}
+
+void cpu::CLV(){
+	setFlag(overflow, 0);
+}
+
+void cpu::CMP(){
+	// subtracts memory from accumulator (data in there)
+	// fetch data from m$$$emory
+	// A - M
+	// A - M = 0, Z flag set
+	// Z reset otherwise
+	// 
 
 }
 

@@ -25,7 +25,7 @@ class cpu{
     byte a = 0x00; // Accumulator register
     byte x = 0x00; // X register
     byte y = 0x00; // Y register
-    byte stack = 0x00; // Stack Pointer
+    byte stack = 0x00FF; // Stack Pointer
     byte2 pc = 0x0000;  // Program Counter
     byte status = 0x00; // Status register
     } registers;
