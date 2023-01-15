@@ -567,3 +567,47 @@ void cpu::LDA(){
 	setFlag(negative, dataFetched & 0x0080);
 }
 
+void cpu::LDX(){
+	// M -> X
+	fetch();
+	registers.x = dataFetched;
+	setFlag(zero, registers.x == 0);
+	setFlag(negative, registers.x & 0x80);
+}
+
+void cpu::LDY(){
+	// M -> Y
+	fetch();
+	registers.y = dataFetched;
+	setFlag(zero, registers.y == 0);
+	setFlag(negative, registers.y & 0x80);
+}
+
+void cpu::LSR(){
+	// highest bit = 0, lowest bit discarded
+	// fetch from mem add
+	fetch();
+	setFlag(carry, dataFetched & 0x0001);
+	byte2 temp = dataFetched >> 1;
+	setFlag(negative, temp & 0x0080);
+	setFlag(zero, temp == 0x0000);
+	write(effAddress, temp);
+}
+
+void cpu::NOP(){
+	return;
+}
+
+void cpu::ORA(){
+	// A or M -> A
+	fetch();
+	registers.a = registers.a | dataFetched;
+	setFlag(zero, registers.a == 0);
+	setFlag(negative, registers.a & 0x0080);
+}
+
+void cpu::PHA(){
+	// A -> stack
+	write(registers.stack + 0x0100, registers.a);
+	registers.stack--;
+}
