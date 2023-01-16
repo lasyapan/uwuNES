@@ -611,3 +611,20 @@ void cpu::PHA(){
 	write(registers.stack + 0x0100, registers.a);
 	registers.stack--;
 }
+
+void cpu::PHP(){
+	write(registers.stack + 0x0100, registers.stack);
+	registers.stack--;
+}
+
+void cpu::PLA(){
+	registers.stack = registers.stack + 1;
+	write(registers.a, registers.stack + 0x0100);
+	registers.stack++;
+	setFlag(negative, registers.a & 0x80);
+	setFlag(zero, registers.a == 0x00);
+}
+
+void cpu::PLP(){
+	
+}
