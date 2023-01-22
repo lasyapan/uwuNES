@@ -626,5 +626,111 @@ void cpu::PLA(){
 }
 
 void cpu::PLP(){
+	registers.stack++;
+	registers.status = read(0x0100 + registers.stack);
+	setFlag(useless, 1);
+}
+
+void cpu::ROL(){
+	fetch();
+	byte2 temp = dataFetched << 1 | getFlag(carry);
+	setFlag(negative, temp & 0x0080);
+	setFlag(zero, temp == 0x0000);
+	setFlag(carry, dataFetched & 0x0001);
+}
+
+void cpu::ROR(){
+	fetch();
+	byte2 temp = dataFetched >> 1 | getFlag(carry) << 7;
+	setFlag(negative, temp & 0x0080);
+	setFlag(zero, temp == 0x0000);
+	setFlag(carry, dataFetched & 0x0001);
+}
+
+void cpu::RTI(){
+	// first stack reads process registers, then pc counter
+	registers.stack++;
+	registers.status = read(registers.stack + 0x0100);
+	// since break and unused are switched on during interrupt
+	registers.status = registers.status | ~bbreak;
+	registers.status = registers.status | ~useless;
+	registers.stack++;
+	registers.pc = read(registers.stack + 0x0100);
+}
+
+void cpu::RTS(){
+	registers.stack++;
+	registers.pc = (registers.stack + 0x0100) | (registers.stack++ + 0x0100) << 8;
+	registers.pc++;
+}
+
+void cpu::SBC(){
+	fetch();
+	registers.a = registers.a - dataFetched - ~carry; 
+	byte2 value = (((byte2)dataFetched)) ^ 0x00FF;
+	byte2 temp = (byte2)registers.a + value + (byte2)getFlag(carry);
+	setFlag(carry, temp & 0xFF00);
+	setFlag(zero, (temp == 0));
+	setFlag(overflow, (temp ^ (byte2)registers.a) & (temp ^ value) & 0x0080);
+	setFlag(negative, temp & 0x0080);
+	registers.a = temp & 0x00FF;
+}
+
+void cpu::SEC(){
+	setFlag(carry, 1);
+}
+
+void cpu::SED(){
+	setFlag(decimal, 1);
+}
+
+void cpu::SEI(){
+	setFlag(interrupt_disable, 1);
+}
+
+void cpu::STA(){
+	write(effAddress, registers.a);
+}
+
+void cpu::STX(){
+	write(effAddress, registers.x);
+}
+
+void cpu::STY(){
+	write(effAddress, registers.y);
+}
+
+void cpu::TAX(){
+	write(registers.x, registers.a);
+	setFlag(negative, registers.x & 0x0080);
+	setFlag(zero, registers.x == 0x0000);
+}
+\
+void cpu::TAY(){
+	write(registers.y, registers.a);
+	setFlag(negative, registers.x & 0x0080);
+	setFlag(zero, registers.y == 0x0000);
+}
+
+void cpu::TSX(){
+	write(registers.x, registers.stack);
+	setFlag(negative, registers.x & 0x0080);
+	setFlag(zero, registers.x == 0x0000);
+}
+
+void cpu::TXA(){
+	write(registers.a, registers.x);
+	setFlag(negative, registers.x & 0x0080);
+	setFlag(zero, registers.x == 0x0000);
+}
+
+void cpu::TXS(){
+	write(registers.stack, registers.x);
 	
+}
+
+void cpu::TYA(){
+	registers.a = registers.y;
+	setFlag(zero, registers.a == 0x0000);
+	setFlag(negative, registers.a & 0x80);
 }
